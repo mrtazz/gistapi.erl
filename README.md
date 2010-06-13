@@ -7,7 +7,7 @@ This is a simple erlang wrapper for the [github gist][1] API.
 Since I use this project to learn erlang, functionality is rather
 limited at the moment and will increase as I know how :)
 
-  gistapi:get_gist("374130").
+    gistapi:get_gist("374130").
 
 
 [1]: http://gist.github.com
