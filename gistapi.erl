@@ -8,7 +8,13 @@
 
 % functions to make the actual requests
 
-get_gist(ID) ->
+get_gist(Gist) ->
+  if
+    is_integer(Gist) ->
+      ID = integer_to_list(Gist);
+    is_list(Gist) ->
+      ID = Gist
+  end,
   Url = get_gist_url(yaml, ID),
   Response = http_get(Url),
   Response.
