@@ -22,21 +22,21 @@ get_gist(Gist) ->
 % helper functions
 http_get(Url) ->
   inets:start(),
-  case http:request(get, {Url, []}, [], []) of
+  Return = case http:request(get, {Url, []}, [], []) of
         {ok, {{_, 200, _}, _, Body}} ->
-          Response = Body;
+          Body;
         {ok, {{_, 403, _}, _, _}} ->
-          Response = forbidden;
+          forbidden;
         {ok, {{_, 404, _}, _, _}} ->
-          Response = not_found;
+          not_found;
         {ok, _} ->
-          Response = request_failed;
+          request_failed;
         {error, Reason} ->
           io:format("timeout? ~p~n", [Reason]),
-          Response = Reason
+          Reason
   end,
   inets:stop(),
-  Response.
+  Return.
 
 % functions to get the assembled URLs
 get_gist_url(yaml, ID) ->
