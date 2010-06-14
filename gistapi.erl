@@ -17,7 +17,7 @@ get_gist(Gist) ->
   end,
   Url = get_gist_url(yaml, ID),
   Response = http_get(Url),
-  Response.
+  lists:map(fun(X) -> string:strip(X) end, string:tokens(Response, "\n")).
 
 % helper functions
 http_get(Url) ->
@@ -35,7 +35,6 @@ http_get(Url) ->
           io:format("timeout? ~p~n", [Reason]),
           Reason
   end,
-  inets:stop(),
   Return.
 
 % functions to get the assembled URLs
