@@ -8,20 +8,20 @@
 
 % functions to make the actual requests
 
-get_gist(Gist) ->
-  if
-    is_integer(Gist) ->
-      ID = integer_to_list(Gist);
-    is_list(Gist) ->
-      ID = Gist
-  end,
+get_gist(Gist) when is_integer(Gist) ->
+  ID = integer_to_list(Gist),
   Url = get_gist_url(yaml, ID),
+  Response = http_get(Url),
+  lists:map(fun(X) -> string:strip(X) end, string:tokens(Response, "\n"));
+
+get_gist(Gist) when is_list(Gist) ->
+  Url = get_gist_url(yaml, Gist),
   Response = http_get(Url),
   lists:map(fun(X) -> string:strip(X) end, string:tokens(Response, "\n")).
 
-get_user_gists(User) ->
-    Url = get_users_gists_url(yaml, User),
-    Response = http_get(Url).
+get_user_gists(User) when is_list(User) ->
+  Url = get_users_gists_url(yaml, User),
+  http_get(Url).
 
 % helper functions
 http_get(Url) ->
