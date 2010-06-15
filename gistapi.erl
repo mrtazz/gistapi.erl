@@ -1,5 +1,5 @@
 -module(gistapi).
--export([get_gist/1]).
+-export([get_gist/1, get_user_gists/1]).
 
 % defines
 -define(BASE_API_URL, "http://gist.github.com/api/v1/").
@@ -18,6 +18,10 @@ get_gist(Gist) ->
   Url = get_gist_url(yaml, ID),
   Response = http_get(Url),
   lists:map(fun(X) -> string:strip(X) end, string:tokens(Response, "\n")).
+
+get_user_gists(User) ->
+    Url = get_users_gists_url(yaml, User),
+    Response = http_get(Url).
 
 % helper functions
 http_get(Url) ->
