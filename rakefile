@@ -1,0 +1,51 @@
+# rakefile for compiling gistapi and tests
+
+require 'rake/clean'
+require 'rake/loaders/makefile'
+
+# binaries
+APPLICATION = 'bin/gist'
+TEST = 'bin/gistapi.beam'
+
+# directories
+BINDIR = "bin"
+
+# main plustache files
+SRC_FILES = FileList['src/gistapi.erl']
+
+# include dirs
+INCLUDE_DIRS = ["/Library/Erlang"]
+
+# compiler/linker stuff
+ERLC = "erlc"
+ERL = "erl"
+ERLCFLAGS = ["-I #{INCLUDE_DIRS.join(" -I")}", "-o #{BINDIR}"]
+ERLFLAGS = ["-noshell"]
+APP_FLAGS = ["-DNOTEST"]
+TEST_FLAGS = ["-DTEST"]
+
+# task definitions
+task :default => :test
+
+desc "task for compiling and executing unit tests"
+task :test => TEST do
+  sh "#{ERL} #{ERLFLAGS.join(" ")} #{TEST}"
+end
+
+# main binary rules
+directory BINDIR
+file APPLICATION => BINDIR
+file APPLICATION do |t|
+  sh "#{ERLC} #{ERLCFLAGS} #{APP_FLAGS}"
+end
+
+# rules for unit testing
+directory BINDIR
+file TEST => BINDIR
+file TEST do |t|
+  sh "#{ERLC} #{ERLCFLAGS.join(" ")} #{TEST_FLAGS.join(" ")} #{SRC_FILES.join(" ")}"
+end
+
+# cleaning tasks
+CLEAN.include(BINDIR)
+
