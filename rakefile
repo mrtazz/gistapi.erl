@@ -3,12 +3,14 @@
 require 'rake/clean'
 require 'rake/loaders/makefile'
 
-# binaries
-APPLICATION = 'bin/gist'
-TEST = 'bin/gistapi.beam'
+NAME = "gist"
 
 # directories
-BINDIR = "bin"
+BINDIR = "ebin"
+
+# binaries
+APPLICATION = "#{BINDIR}/gist.beam"
+TEST = "#{BINDIR}/gistapi.beam"
 
 # main plustache files
 SRC_FILES = FileList['src/gistapi.erl']
@@ -16,11 +18,11 @@ SRC_FILES = FileList['src/gistapi.erl']
 # include dirs
 INCLUDE_DIRS = ["/Library/Erlang"]
 
-# compiler/linker stuff
+# compiler stuff
 ERLC = "erlc"
 ERL = "erl"
-ERLCFLAGS = ["-I #{INCLUDE_DIRS.join(" -I")}", "-o #{BINDIR}"]
-ERLFLAGS = ["-noshell"]
+ERLCFLAGS = ["-I #{INCLUDE_DIRS.join(" -I")}", "-o #{BINDIR}", "-pa #{BINDIR}"]
+ERLFLAGS = ["-noshell", "-sname #{NAME}"]
 APP_FLAGS = ["-DNOTEST"]
 TEST_FLAGS = ["-DTEST"]
 
@@ -47,5 +49,5 @@ file TEST do |t|
 end
 
 # cleaning tasks
-CLEAN.include(BINDIR)
+CLEAN.include(BINDIR, FileList["**/erl_crash.dump"])
 
