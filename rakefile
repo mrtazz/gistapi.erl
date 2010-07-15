@@ -38,7 +38,7 @@ end
 directory BINDIR
 file APPLICATION => BINDIR
 file APPLICATION do |t|
-  sh "#{ERLC} #{ERLCFLAGS} #{APP_FLAGS}"
+  sh "#{ERLC} #{ERLCFLAGS.join(" ")} #{APP_FLAGS.join(" ")}"
 end
 
 # rules for unit testing
