@@ -1,53 +1,32 @@
 # rakefile for compiling gistapi and tests
 
+require 'rake'
 require 'rake/clean'
 require 'rake/loaders/makefile'
 
 NAME = "gist"
 
+# compiler flags
+ERLC_FLAGS = "+debug_info -W2 -o ebin"
+
 # directories
 BINDIR = "ebin"
 
-# binaries
-APPLICATION = "#{BINDIR}/gist.beam"
-TEST = "#{BINDIR}/gistapi.beam"
-
-# main plustache files
-SRC_FILES = FileList['src/gistapi.erl']
-
-# include dirs
-INCLUDE_DIRS = ["/Library/Erlang"]
-
-# compiler stuff
-ERLC = "erlc"
-ERL = "erl"
-ERLCFLAGS = ["-I #{INCLUDE_DIRS.join(" -I")}", "-o #{BINDIR}", "-pa #{BINDIR}"]
-ERLFLAGS = ["-noshell", "-sname #{NAME}"]
-APP_FLAGS = ["-DNOTEST"]
-TEST_FLAGS = ["-DTEST"]
-
-# task definitions
-task :default => :test
-
-desc "task for compiling and executing unit tests"
-task :test => TEST do
-  sh "#{ERL} #{ERLFLAGS.join(" ")} #{TEST}"
+desc "change working dir to ."
+task :chdir do
+  Dir.chdir(File.join(File.dirname(__FILE__), *%w[.]))
 end
 
-# main binary rules
-directory BINDIR
-file APPLICATION => BINDIR
-file APPLICATION do |t|
-  sh "#{ERLC} #{ERLCFLAGS.join(" ")} #{APP_FLAGS.join(" ")}"
+directory "#{BINDIR}"
+task :build => :chdir do
+  sh "erlc #{ERLC_FLAGS} src/*.erl"
 end
 
-# rules for unit testing
-directory BINDIR
-file TEST => BINDIR
-file TEST do |t|
-  sh "#{ERLC} #{ERLCFLAGS.join(" ")} #{TEST_FLAGS.join(" ")} #{SRC_FILES.join(" ")}"
+task :test => :chdir do
+  sh "erlc #{ERLC_FLAGS} -DTEST -I etest src/*.erl"
+  sh "test/run.es"
 end
 
-# cleaning tasks
-CLEAN.include(BINDIR, FileList["**/erl_crash.dump"])
-
+task :console => :chdir do
+  sh "erl +Bc +K true -smp enable -pa ebin -sname local_console_#{$$} -kernel start_boot_server true"
+end
