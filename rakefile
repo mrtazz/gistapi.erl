@@ -11,22 +11,27 @@ ERLC_FLAGS = "+debug_info -W2 -o ebin"
 
 # directories
 BINDIR = "ebin"
+TESTDIR = "test"
 
 desc "change working dir to ."
 task :chdir do
   Dir.chdir(File.join(File.dirname(__FILE__), *%w[.]))
 end
 
+desc "build application"
 directory "#{BINDIR}"
 task :build => :chdir do
   sh "erlc #{ERLC_FLAGS} src/*.erl"
 end
 
+desc "run unit tests"
+directory "#{TESTDIR}"
 task :test => :chdir do
   sh "erlc #{ERLC_FLAGS} -DTEST -I etest src/*.erl"
-  sh "test/run.es"
+  sh "#{TESTDIR}/run.es"
 end
 
+desc "run console"
 task :console => :chdir do
   sh "erl +Bc +K true -smp enable -pa ebin -sname local_console_#{$$} -kernel start_boot_server true"
 end
